@@ -42,12 +42,61 @@
                     </a>
                 </div>
             </div>
-            <form class="contact-form">
-                <input type="text" placeholder="الاسم" required>
-                <input type="email" placeholder="البريد الإلكتروني" required>
-                <textarea placeholder="رسالتك" required></textarea>
-                <button type="submit">إرسال</button>
-            </form>
+           </form>
+
+<p id="status"></p>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<script>
+const form = document.getElementById('contactForm');
+const status = document.getElementById('status');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // التحقق من reCAPTCHA
+  const recaptcha = grecaptcha.getResponse();
+  if (!recaptcha) {
+    status.textContent = "❌ الرجاء تأكيد أنك لست روبوت!";
+    return;
+  }
+
+  // بيانات الفورم
+  const data = {
+    name: form.name.value,
+    email: form.email.value,
+    message: form.message.value,
+    'g-recaptcha-response': recaptcha
+  };
+
+  try {
+    const res = await fetch('https://dvczqzshbcyarrbowpbk.supabase.co', {
+      method: 'POST',
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2Y3pxenNoYmN5YXJyYm93cGJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1MDAzODgsImV4cCI6MjA3NzA3NjM4OH0.BoIp1LfzeRuRg-2wKWl2-4p_a-j_ehf9pw_peiUlZXc',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2Y3pxenNoYmN5YXJyYm93cGJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1MDAzODgsImV4cCI6MjA3NzA3NjM4OH0.BoIp1LfzeRuRg-2wKWl2-4p_a-j_ehf9pw_peiUlZXc',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+      status.textContent = "✅ تم الإرسال بنجاح!";
+      form.reset();
+      grecaptcha.reset();
+    } else {
+      const error = await res.json();
+      status.textContent = "❌ حدث خطأ: " + (error.message || JSON.stringify(error));
+    }
+
+  } catch (err) {
+    status.textContent = "❌ حدث خطأ: " + err.message;
+  }
+});
+</script>
+
         </div>
     </section>
      <footer>
@@ -68,4 +117,5 @@
     </div>
     </footer>
 </body>
+
 </html>
