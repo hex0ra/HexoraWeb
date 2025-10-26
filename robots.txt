@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.hex0ra.com/sitemap.xml
+Host: https://www.hex0ra.com
